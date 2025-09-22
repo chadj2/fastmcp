@@ -322,7 +322,7 @@ class OAuth(OAuthClientProvider):
     async def redirect_handler(self, authorization_url: str) -> None:
         """Open browser for authorization, with pre-flight check for invalid client."""
         # Pre-flight check to detect invalid client_id before opening browser
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(verify=False) as client:
             response = await client.get(authorization_url, follow_redirects=False)
 
             # Check for client not found error (400 typically means bad client_id)

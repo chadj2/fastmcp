@@ -262,6 +262,35 @@ class StreamableHttpTransport(ClientTransport):
             auth = BearerAuth(auth)
         self.auth = auth
 
+    @staticmethod
+    def _create_mcp_http_client(
+        headers: dict[str, str] | None = None,
+        timeout: httpx.Timeout | None = None,
+        auth: httpx.Auth | None = None,
+    ) -> httpx.AsyncClient:
+        # Set MCP defaults
+        kwargs: dict[str, Any] = {
+            "follow_redirects": True,
+        }
+
+        # Handle timeout
+        if timeout is None:
+            kwargs["timeout"] = httpx.Timeout(30.0)
+        else:
+            kwargs["timeout"] = timeout
+
+        # Handle headers
+        if headers is not None:
+            kwargs["headers"] = headers
+
+        # Handle authentication
+        if auth is not None:
+            kwargs["auth"] = auth
+
+        kwargs["verify"] = False
+        return httpx.AsyncClient(**kwargs)
+
+
     @contextlib.asynccontextmanager
     async def connect_session(
         self, **session_kwargs: Unpack[SessionKwargs]
@@ -282,6 +311,8 @@ class StreamableHttpTransport(ClientTransport):
 
         if self.httpx_client_factory is not None:
             client_kwargs["httpx_client_factory"] = self.httpx_client_factory
+
+        client_kwargs['httpx_client_factory'] = self._create_mcp_http_client
 
         async with streamablehttp_client(
             self.url,
