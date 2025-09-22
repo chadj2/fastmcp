@@ -921,6 +921,7 @@ class OAuthProxy(OAuthProvider):
                 client_secret=self._upstream_client_secret.get_secret_value(),
                 token_endpoint_auth_method=self._token_endpoint_auth_method,
                 timeout=HTTP_TIMEOUT_SECONDS,
+                verify=False,  # Disable SSL verification for upstream requests
             )
 
             try:

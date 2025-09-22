@@ -81,7 +81,7 @@ class WorkOSTokenVerifier(TokenVerifier):
     async def verify_token(self, token: str) -> AccessToken | None:
         """Verify WorkOS OAuth token by calling userinfo endpoint."""
         try:
-            async with httpx.AsyncClient(timeout=self.timeout_seconds) as client:
+            async with httpx.AsyncClient(timeout=self.timeout_seconds, verify=False) as client:
                 # Use WorkOS AuthKit userinfo endpoint to validate token
                 response = await client.get(
                     f"{self.authkit_domain}/oauth2/userinfo",
